@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block header %}
+<title>{{ title }}</title>
+{% endblock %}
+{% block body %}
+	<div class="breadcrumb">
+		<a href="#">全部分类</a>
+		<span>></span>
+		<a href="#">{{ kind.ttitle }}</a>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>新品推荐</h3>
+				<ul>
+                    {% for goods in new_list %}
+					<li>
+						<a href="#"><img src="/static/{{ goods.gpic }}"></a>
+						<h4><a href="{{ goods.id }}">{{ goods.gtitle }}</a></h4>
+						<div class="prize">￥{{ goods.gpice }}</div>
+					</li>
+                    {% endfor %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="r_wrap fr clearfix">
+			<div class="sort_bar">
+				<a href="#" class="active">默认</a>
+				<a href="#">价格</a>
+				<a href="#">人气</a>
+			</div>
+
+			<ul class="goods_type_list clearfix">
+                {% for goods in all_list %}
+				<li>
+					<a href="/detail{{ goods.id }}/"><img src="/static/{{ goods.gpic }}"></a>
+					<h4><a href="/detail{{ goods.id }}/">{{ goods.gtitle }}</a></h4>
+					<div class="operate">
+						<span class="prize">￥16.80</span>
+						<span class="unit">16.80/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+                {% endfor %}
+			</ul>
+
+			<div class="pagenation">
+				{%if page.has_previous%}
+				<a href="/lists{{kind.id}}_{{page.number|add:-1}}/"><上一页</a>
+				{%endif%}
+
+				{%for pindex in page.paginator.page_range%}
+				{%if page.number == pindex%}
+				<a href="#" class="active">{{pindex}}</a>
+				{%else%}
+				<a href="/lists{{kind.id}}_{{pindex}}/">{{pindex}}</a>
+				{%endif%}
+				{%endfor%}
+
+				{%if page.has_next%}
+				<a href="/lists{{kind.id}}_{{page.number|add:1}}/"><下一页</a>
+				{%endif%}
+				<hr>
+				首页 上一页  ... 4 5 6 7 8 ...  下一页 末页
+			</div>
+		</div>
+	</div>
+
+</html>
+{% endblock %}
