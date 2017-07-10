@@ -3,6 +3,8 @@ import hashlib
 import datetime
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
+
+from ttsx_goods.models import GoodsInfo
 from ttsx_user.models import UserInfo
 # from django.contrib.auth import login, authenticate
 from user_decoration import islogin
@@ -112,8 +114,15 @@ def user_site(request):
 @islogin
 def user_info(request):
     user = UserInfo.objects.get(pk=request.session['uid'])
-    context = {'user': user, 'title': '个人信息'}
+
+    goods = request.COOKIES.get('good_ids', '')
+    id_list = goods.split('_')[:-1]
+    glist = []
+    for id in id_list:
+        glist.append(GoodsInfo.objects.get(id=id))
+    context = {'user': user, 'title': '个人信息', 'glist': glist}
     return render(request, 'ttsx_user/user_center_info.html', context)
+
 
 
 @islogin

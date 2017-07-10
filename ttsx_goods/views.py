@@ -40,8 +40,20 @@ def detail(request, gid):
     try:
         goods = GoodsInfo.objects.get(pk=int(gid))
         new_goods = goods.gtype.goodsinfo_set.order_by('-id')[0:2]
+        goods.gclick += 1
+        goods.save()  # 点击商品之后 记录下来
 
         context = {'title': '商品详情页', 'new_goods': new_goods, 'goods': goods}
-        return render(request, 'ttsx_goods/detail.html', context)
-    except :
+        response = render(request, 'ttsx_goods/detail.html', context)
+
+        ids = request.COOKIES.get('good_ids', '').split('_')
+        # 去除重复的商品
+        if gid in ids:
+            ids.remove(gid)
+        ids.insert(0, gid)
+        if len(ids) > 6:
+            ids.pop()
+        response.set_cookie('good_ids', '_'.join(ids), max_age=60 * 60 * 24 * 7)
+        return response
+    except:
         return render(request, '404.html')
