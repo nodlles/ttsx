@@ -5,6 +5,6 @@ from ttsx_goods import views
 
 urlpatterns =[
     url(r'^index/$', views.index),
-    url(r'^lists(\d+)_(\d+)/$', views.lists),
+    url(r'^lists(\d+)_(\d+)_(\d+)/$', views.lists),
     url(r'^detail(\d+)/$',views.detail),
 ]
