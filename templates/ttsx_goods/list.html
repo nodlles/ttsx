@@ -1,6 +1,26 @@
 {% extends 'base.html' %}
 {% block header %}
     <title>{{ title }}</title>
+    <script>
+       function add_cart(gid) {
+		//登录判断
+		$.get('/user_islogin/',function (data) {
+			if(data.islogin){
+			    //如果登录，则加入购物车
+				$.get('/add/',{'gid':gid},function (data) {
+				    if(data.isadd){
+				        alert('购买成功');
+					}else{
+				        alert('购买失败，请稍候重试');
+					}
+                });
+			}else{
+			    //如果未登录，则提示登录
+				location.href='/login/';
+			}
+        });
+    }
+    </script>
 {% endblock %}
 {% block body %}
 	<div class="breadcrumb">
@@ -40,7 +60,7 @@
 					<div class="operate">
 						<span class="prize">￥{{ goods.gpice }}</span>
 						<span class="unit">{{ goods.gpice }}/{{ goods.gunit }}</span>
-						<a href="/cart/" class="add_goods" title="加入购物车"></a>
+						<a href="javascript:add_cart({{goods.id}});" class="add_goods" title="加入购物车"></a>
 					</div>
 				</li>
                 {% endfor %}

@@ -4,6 +4,38 @@
     <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
     <script>
         $(function () {
+            $('#add_cart').click(function () {
+                var gid = $('#gid').val();  //获取商品的id
+                var count = $('.num_show').val();  //获取商品的数量信息
+                //判断是否登录
+                $.get('/user_islogin/', function (data) {
+                    if(data.islogin){
+                        $.get('/add/',{'gid': gid, 'count':count}, function (data) {
+                            if (data.isadd){
+                               var $add_x = $('#add_cart').offset().top;
+								var $add_y = $('#add_cart').offset().left;
+
+								var $to_x = $('#show_count').offset().top;
+								var $to_y = $('#show_count').offset().left;
+
+								$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+								$(".add_jump").stop().animate({'left': $to_y+7, 'top': $to_x+7}, "fast", function() {
+									$(".add_jump").fadeOut('fast',function(){
+									    $.get('/count/',function (data) {//从后台查询count数据
+											$('#show_count').html(data.count);
+                                        });
+									});
+								});
+
+                            } else {
+                                alert('添加失败');
+                            }
+                        });
+                    }
+                });
+            });
+
+
             //改变数量 监听数量 加号 减号
             $('.num_show').blur(function () {
                 var num = parseInt($(this).val());
@@ -35,14 +67,6 @@
                 $num.val(num).blur()
             });
 {##}
-{#            $('#add_cart').click(function () {#}
-{#                var gid = $('#gid').val();  //获取商品的id#}
-{#                var count = $('.num_show').val();  //获取商品的数量信息#}
-{#                //判断是否登录#}
-{#                $.get('/user_islogin/', function (data) {#}
-{#                    alert(data.islogin)#}
-{#                })#}
-{#            })#}
         })
     </script>
 {% endblock %}

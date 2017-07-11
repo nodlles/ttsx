@@ -76,6 +76,13 @@ def logout(request):
     return redirect('/index/')
 
 
+def user_islogin(request):
+    res = 0
+    if request.session.has_key('uid'):
+        res = 1
+    return JsonResponse({'islogin': res})
+
+
 @islogin
 def user_site(request):
     user = UserInfo.objects.get(pk=request.session['uid'])
