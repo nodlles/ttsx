@@ -24,4 +24,5 @@ urlpatterns = [
     # url(r'^xadmin/', include(xadmin.site.urls)),
     url(r'^', include('ttsx_user.urls')),
     url(r'^', include('ttsx_goods.urls')),
+    url(r'^', include('ttsx_cart.urls')),
 ]

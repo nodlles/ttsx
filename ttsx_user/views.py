@@ -74,21 +74,6 @@ def log_handle(request):
 def logout(request):
     request.session.flush()
     return redirect('/index/')
-# def user_login(request):
-#     if request.method == "POST":
-#         # 获取浏览器中用户输入的用户名和密码
-#         user_name = request.POST.get("username")
-#         user_pwd = request.POST.get("pwd")
-#
-#         # 执行authenticate函数，需要传入两个参数，如果用户名和密码正确，则返回user对象，否则返回None
-#         user = authenticate(username=user_name, password=user_pwd)
-#         if user is not None:
-#             login(request, user)
-#             return render(request, "ttsx_user/index.html")  # 登陆成功，返回主页
-#         else:
-#             return render(request, "ttsx_user/login.html", {"msg": "用户名或密码错误"})  # 登陆失败，返回登陆页面并提示
-#     elif request.method == "GET":
-#         return render(request, "ttsx_user/login.html")  # get方法，可将所有的指向登陆页的链接设置到这个函数， /user_login/
 
 
 @islogin
@@ -122,7 +107,6 @@ def user_info(request):
         glist.append(GoodsInfo.objects.get(id=id))
     context = {'user': user, 'title': '个人信息', 'glist': glist}
     return render(request, 'ttsx_user/user_center_info.html', context)
-
 
 
 @islogin

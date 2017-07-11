@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'ttsx_goods',
     # 'xadmin',
     # 'crispy_forms',
+    'ttsx_cart',
 )
 
 MIDDLEWARE_CLASSES = (
