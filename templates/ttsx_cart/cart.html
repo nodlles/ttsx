@@ -1,14 +1,16 @@
 {% extends 'user_base.html' %}
 {% block header %}
     <title>{{ title }}</title>
+    <script src="/static/js/jquery-1.12.4.min.js"></script>
     <script>
         $(function () {
-            alert(1)
+            var total_all = 0
             var $price = parseFloat($('.cart_list_td .col05').text()).toFixed(2);
             var $count = parseInt($('.cart_list_td .col06 .num_show').val());
-            var total = parseInt($price*$count).toFixed(2);
-            $('.cart_list_td .col07').text(total)
-
+            var total = parseFloat($price*$count).toFixed(2);
+            total_all +=total
+            $('.cart_list_td .col07').text(total+ '元')
+            $('.settlements .col03 em').text(total_all)
         })
     </script>
 {% endblock %}
