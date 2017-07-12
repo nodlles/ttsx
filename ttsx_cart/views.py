@@ -3,11 +3,15 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 from ttsx_cart.models import CartInfo
+from ttsx_user.user_decoration import islogin
 
 
+@islogin
 def cart(request):
+    uid = request.session.get('uid')
+    cart_list = CartInfo.objects.filter(user_id=uid)
 
-    context = {'title': '购物车'}
+    context = {'title': '购物车', 'cart_list': cart_list}
     return render(request, 'ttsx_cart/cart.html', context)
 
 
@@ -27,6 +31,7 @@ def add(request):
             cart1 = carts_list[0]
             cart1.count += count
             cart1.save()
+
         else:
             carts = CartInfo()
             carts.count = count
@@ -42,6 +47,5 @@ def add(request):
 
 def count(request):
     uid = request.session.get('uid')
-    cart = CartInfo.objects.get(id=uid)
-    count = cart.count
-    return JsonResponse({'count': count})
+    counting = CartInfo.objects.filter(user_id=uid).count()
+    return JsonResponse({'count': counting})

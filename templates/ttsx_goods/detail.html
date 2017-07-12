@@ -4,22 +4,27 @@
     <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
     <script>
         $(function () {
-            $('#add_cart').click(function () {
+                $('#add_cart').click(function () {
                 var gid = $('#gid').val();  //获取商品的id
                 var count = $('.num_show').val();  //获取商品的数量信息
                 //判断是否登录
                 $.get('/user_islogin/', function (data) {
-                    if(data.islogin){
+                    if(data.islogin){//进行登录验证
+
                         $.get('/add/',{'gid': gid, 'count':count}, function (data) {
-                            if (data.isadd){
-                               var $add_x = $('#add_cart').offset().top;
-								var $add_y = $('#add_cart').offset().left;
+                            if (data.isadd){//进行数据库写入,如果写入成功执行JS动画,执行失败弹出添加失败的提示框
 
-								var $to_x = $('#show_count').offset().top;
-								var $to_y = $('#show_count').offset().left;
+                                var $add_cart = $('#add_cart');//将使用多次的选择器,使用变量保存在内存中,提高效率
+                                var $add_x = $add_cart.offset().top;
+								var $add_y = $add_cart.offset().left;
 
-								$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
-								$(".add_jump").stop().animate({'left': $to_y+7, 'top': $to_x+7}, "fast", function() {
+                                var $show_count = $('#show_count');//将使用多次的选择器,使用变量保存在内存中,提高效率
+								var $to_x = $show_count.offset().top;
+								var $to_y = $show_count.offset().left;
+
+								var $add_jump = $('.add_jump');//将使用多次的选择器,使用变量保存在内存中,提高效率
+								$add_jump.css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+								$add_jump.stop().animate({'left': $to_y+7, 'top': $to_x+7}, "fast", function() {
 									$(".add_jump").fadeOut('fast',function(){
 									    $.get('/count/',function (data) {//从后台查询count数据
 											$('#show_count').html(data.count);
@@ -35,38 +40,37 @@
                 });
             });
 
-
             //改变数量 监听数量 加号 减号
             $('.num_show').blur(function () {
                 var num = parseInt($(this).val());
                 var stock = $('#stock').val();//库存量
-                if (isNaN(num)){
+                if (isNaN(num)){//如果为空,自动改为默认值1
                     num = 1
                 }
-                if (num<1){
+                if (num<1){//如果数量小于1,自动改为默认值1
                     num = 1
                 }
-                if (num>stock){
+                if (num>stock){//如果大于库存量,自动设置为当前库存数量
                     num = stock
                 }
-                $(this).val(num);
+                $(this).val(num);//将num赋值给value属性
                 var price = parseFloat($('.show_pirze em').text());
                 $('.total em').text((num*price).toFixed(2)+'元');//保留两位小数
             });
-            $('.add').click(function () {
+            $('.add').click(function () {//当点击加号时,执行blur函数
                 var $num = $('.num_show');
                 var num = parseInt($num.val());
                 num++;
                 $num.val(num).blur()
 
             });
-            $('.minus').click(function () {
+            $('.minus').click(function () {//当点击减号时,执行blur函数
                 var $num = $('.num_show');
                 var num = parseInt($num.val());
                 num--;
                 $num.val(num).blur()
             });
-{##}
+
         })
     </script>
 {% endblock %}

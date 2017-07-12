@@ -3,6 +3,8 @@
 
 from django.core.paginator import Paginator
 from django.shortcuts import render
+
+from ttsx_cart.models import CartInfo
 from ttsx_goods.models import TypeInfo, GoodsInfo
 
 
@@ -10,10 +12,13 @@ def index(request):
     """商品首页"""
     type_list = TypeInfo.objects.all()  # 查询出所有类别
     context_list = []
+    # 用户添加完购物车后,将信息写入cookie,用于本地电脑存在购物车页面的信息显示
+    # ...
+    #
     for kind in type_list:  # 查询出每个列别对应的所有商品，按id和点击量降序排列
         new_list = kind.goodsinfo_set.order_by('-id')[0:4]  # 取出前四个
         click_list = kind.goodsinfo_set.order_by('-gclick')[0:4]  # 取出前四个
-        context_list.append({'new_list':new_list, 'click_list': click_list, 'kind':kind})  # 将两种排序组合为字典
+        context_list.append({'new_list':new_list, 'click_list': click_list, 'kind': kind})  # 将两种排序组合为字典
     context = {'title': '首页', 'context_list': context_list}
     return render(request, 'ttsx_goods/index.html', context)
 
