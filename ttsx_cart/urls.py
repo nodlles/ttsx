@@ -7,4 +7,6 @@ urlpatterns = [
     url(r'^cart/$', views.cart),
     url(r'^add/$', views.add),
     url(r'^count/$', views.count),
+    url(r'^editor/$', views.editor),
+    url(r'^delete/$', views.delete),
 ]

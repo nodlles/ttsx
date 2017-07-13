@@ -16,15 +16,14 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-# import xadmin
 
 
 admin.autodiscover()
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    # url(r'^xadmin/', include(xadmin.site.urls)),
     url(r'^', include('ttsx_user.urls')),
     url(r'^', include('ttsx_goods.urls')),
     url(r'^', include('ttsx_cart.urls')),
+    url(r'^', include('ttsx_order.urls')),
     url(r'^search/', include('haystack.urls')),  # 配置URL搜索引擎
 ]

@@ -49,3 +49,19 @@ def count(request):
     uid = request.session.get('uid')
     counting = CartInfo.objects.filter(user_id=uid).count()
     return JsonResponse({'count': counting})
+
+
+def editor(request):
+    cid = request.GET.get('cid')
+    num = request.GET.get('count')
+    cart_obj = CartInfo.objects.get(pk=cid)
+    cart_obj.count = num
+    cart_obj.save()
+    return JsonResponse({'ok': 1})
+
+
+def delete(request):
+    cid = request.GET.get('cid')
+    cart_obj = CartInfo.objects.get(pk=cid)
+    cart_obj.delete()
+    return JsonResponse({'ok': 1})

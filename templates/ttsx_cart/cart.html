@@ -1,21 +1,112 @@
 {% extends 'user_base.html' %}
+
 {% block header %}
+
     <title>{{ title }}</title>
+
     <script src="/static/js/jquery-1.12.4.min.js"></script>
+
     <script>
-        $(function () {
-            var total_all = 0
-            var $price = parseFloat($('.cart_list_td .col05').text()).toFixed(2);
-            var $count = parseInt($('.cart_list_td .col06 .num_show').val());
-            var total = parseFloat($price*$count).toFixed(2);
-            total_all +=total
-            $('.cart_list_td .col07').text(total+ '元')
-            $('.settlements .col03 em').text(total_all)
-        })
+            //定义计小计和总计的函数
+            function total() {
+                var total_all = 0;
+                var $cart_list = $('.cart_list_td');
+                $cart_list.each(function () {
+                    var count = parseInt($(this).find('.num_show').val());
+                    var price = parseFloat($(this).children('.col05').text());
+                    var total_one = count*price;
+                    total_all += total_one;
+                    $(this).children('.col07').text(parseFloat(total_one.toFixed(2)));//小计
+                });
+                var $settlements = $('.settlements');
+                $settlements.children('.col03').find('em').text(parseFloat(total_all.toFixed(2)));//合计
+                var num = $cart_list.length;//商品数量
+                $('.total_count em').text(num);//左上角商品总数
+                $settlements.children('.col03').find('b').text(num)//右下角选择好的商品总数
+            }//定义计小计和总计的函数
+
+            // 定义删除商品函数
+            function dele(cid) {
+                if(confirm('确定要删除商品吗?')){
+                    $.get('/delete/', {'cid':cid}, function (data) {
+                        if(data.ok === 1){
+                            $('#td'+cid).remove();
+                            total()
+                        }
+                    });
+                }
+
+            }// 定义删除商品函数
+
+            //DOM ready调用函数
+            $(function () {
+                total();
+
+                //通过check_all让其他非check_all选中或非选中
+                $('#check_all').click(function () {
+                    checked = $(this).prop('checked');
+                    $(':checkbox:not(#check_all)').prop('checked',checked);//不包含check_all的所有选框
+                    total()
+                });//通过check_all让其他非check_all选中或非选中
+
+                //判断何时让check_all选中或者非选中
+                $(':checkbox:not(#check_all)').click(function () {
+                    if($(':checkbox:not(#check_all)').length===$(':checked:not(#check_all)').length){
+                        $('#check_all').prop('checked',true)
+                    }
+                    else {
+                        $('#check_all').prop('checked',false)
+                    }
+                });//判断何时让check_all选中或者非选中
+
+
+                //定义显示框的失去焦点的函数
+                $('.num_show').blur(function () {
+                var num = parseInt($(this).val());
+                var stock = $(this).parents().find('.col03').find('em').text();
+                if(isNaN(num)){
+                    num = 1
+                }
+                if(num<1){
+                    num =1
+                }
+                if(num> stock){
+                    num = stock
+                }
+                var cid = $(this).parents('.cart_list_td').children('.col01').children('input').val();//购物车pk
+                $(this).val(num);//最终把num赋值给这个显示框
+                $.get('/editor/', {'cid':cid, 'count':num}, function (data) {
+                    if(data.ok === 1){
+                        total()
+                    }
+                })
+            });//定义显示框的失去焦点的函数
+
+                //定义减号事件
+                $('.add').click(function () {
+                    var num = $(this).next().val();
+                    num ++;
+                    $(this).next().val(num).blur()
+
+                })//定义减号事件
+
+                //定义减号事件
+                $('.minus').click(function () {
+                    var num = $(this).prev('.num_show').val();
+                    num --;
+                    $(this).prev().val(num).blur()
+                });//定义减号事件
+
+            });//DOM ready调用函数
+
     </script>
+
 {% endblock %}
+
 {% block body %}
-	<div class="total_count">全部商品<em>{{ cart_list.count }}</em>件</div>
+
+	<div class="total_count">全部商品<em>2</em>件</div>
+
 	<ul class="cart_list_th clearfix">
 		<li class="col01">商品名称</li>
 		<li class="col02">商品单位</li>
@@ -24,11 +115,12 @@
 		<li class="col05">小计</li>
 		<li class="col06">操作</li>
 	</ul>
+
     {% for goods in cart_list %}
-	<ul class="cart_list_td clearfix">
-		<li class="col01"><input type="checkbox" name="" checked></li>
+	<ul class="cart_list_td clearfix" id="td{{ goods.id }}">
+		<li class="col01"><input type="checkbox" name="goods_id" checked="checked" value="{{ goods.id }}"></li>
 		<li class="col02"><img src="/static/{{ goods.goods.gpic }}"></li>
-		<li class="col03">{{ goods.goods.gtitle }}<br><em>{{ goods.goods.gpice }}元/{{ goods.goods.gunit }}</em></li>
+		<li class="col03">{{ goods.goods.gtitle }}<br><em>库存剩余:{{ goods.goods.gstock }}</em></li>
 		<li class="col04">{{ goods.goods.gunit }}</li>
 		<li class="col05">{{ goods.goods.gpice }}元</li>
 		<li class="col06">
@@ -38,15 +130,16 @@
 				<a href="javascript:;" class="minus fl">-</a>	
 			</div>
 		</li>
-		<li class="col07"></li>
-		<li class="col08"><a href="javascript:;">删除</a></li>
+		<li class="col07">元</li>
+		<li class="col08"><a href="javascript:dele({{ goods.id }});">删除</a></li>
 	</ul>
     {% endfor %}
 
 	<ul class="settlements">
-		<li class="col01"><input type="checkbox" name="" checked=""></li>
+		<li class="col01"><input type="checkbox" id="check_all" checked="checked"></li>
 		<li class="col02">全选</li>
-		<li class="col03">合计(不含运费)：<span>¥</span><em>42.60</em><br>共计<b>{{ cart_list.count }}</b>件商品</li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em>42.60</em><br>共计<b></b>件商品</li>
 		<li class="col04"><a href="../ttsx_user/place_order.html">去结算</a></li>
 	</ul>
+
 {% endblock %}
